@@ -6,6 +6,9 @@ A python library to visualize A* Path finding Algorithm in action
 
 ![Image](https://raw.githubusercontent.com/karthik-saiharsh/A-star-visualiser/refs/heads/main/demo.png)
 
+# Dependencies
+- `pip install pygame`
+- `pip3 install pygame` (linux)
 
 # Usage
 
