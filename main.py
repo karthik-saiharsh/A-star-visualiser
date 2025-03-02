@@ -66,6 +66,9 @@ class Node():
     def set_end(self):
         self.color = Colors().end
 
+    def set_path(self):
+        self.color = Colors().path
+
     def reset(self):
         self.color = Colors().neutral
 
@@ -76,29 +79,33 @@ class Node():
         pygame.draw.rect(win, self.color, (self.x, self.y, self.size, self.size))
 
     def determine_neighbours(self, grid):
+        # Left Neighbour
         if self.col > 0 and not grid[self.row][self.col-1].is_inactive():
             self.neighbours.append(grid[self.row][self.col-1])
 
+        # Right neighbour
         if self.col < self.total_rows-1 and not grid[self.row][self.col+1].is_inactive():
             self.neighbours.append(grid[self.row][self.col+1])
 
+        # Top neighbour
         if self.row > 0 and not grid[self.row-1][self.col].is_inactive():
             self.neighbours.append(grid[self.row-1][self.col])
 
-        if self.row < self.total_rows-1 and not grid[self.col+1][self.col].is_inactive():
-            self.neighbours.append(grid[self.col+1][self.col])
+        # Bottom Neighbour
+        if self.row < self.total_rows-1 and not grid[self.row+1][self.col].is_inactive():
+            self.neighbours.append(grid[self.row+1][self.col])
 
         if self.enable_diagonal_paths:
             if self.row > 0 and self.col > 0 and not grid[self.row-1][self.col-1].is_inactive():
                 self.neighbours.append(grid[self.row-1][self.col-1])
 
-            if self.row > 0 and self.col < self.total_rows and not grid[self.row-1][self.col+1].is_inactive():
+            if self.row > 0 and self.col < self.total_rows-1 and not grid[self.row-1][self.col+1].is_inactive():
                 self.neighbours.append(grid[self.row-1][self.col+1])
 
-            if self.row < self.total_rows and self.col > 0 and not grid[self.row+1][self.col-1].is_inactive():
+            if self.row < self.total_rows-1 and self.col > 0 and not grid[self.row+1][self.col-1].is_inactive():
                 self.neighbours.append(grid[self.row+1][self.col-1])
 
-            if self.row < self.total_rows and self.col < self.total_rows and not grid[self.row+1][self.col+1].is_inactive():
+            if self.row < self.total_rows-1 and self.col < self.total_rows-1 and not grid[self.row+1][self.col+1].is_inactive():
                 self.neighbours.append(grid[self.row+1][self.col+1])
 
 
@@ -108,14 +115,15 @@ class Visualizer():
     def __init__(self, size, rows, enable_diagonal_paths=False):
 
         # Verify that the dimentions of the window are in proper ration
-        if int(str(size/rows)[str(size/rows).find(".")+1:]) != 0:
-            print("The window size must be divisible by the number of rows")
-            exit(1)
+        assert size % rows == 0, "The window size must be divisible by the number of rows"
 
         self.enable_diagonal_paths = enable_diagonal_paths
         self.size = size
         self.rows = rows
         self.win = pygame.display.set_mode((size, size))
+
+        # A custom heurisic function can be passed here
+        self.heuristic = None
 
         pygame.display.set_caption("PathFinding algorithm vizualiser")
 
@@ -169,14 +177,21 @@ class Visualizer():
                         start_node = None
                     if node == end_node:
                         end_node = None
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE and not started_algorithm:
+                        for row in grid:
+                            for node in row:
+                                node.determine_neighbours(grid)
+                        self.run_algorithm(grid, start_node, end_node)
         pygame.quit()
 
 
-    def heuristic_function(self, pos1, pos2, alternate=None):
+    def heuristic_function(self, pos1, pos2):
         # Heuristic function for A*
         # Default heuristic is just the eucledian distance between 2 points
-        if alternate is not None:
-            return alternate(pos1, pos2)
+        if self.heuristic != None:
+            return self.heuristic(pos1, pos2)
         x1, y1 = pos1
         x2, y2 = pos2
         return sqrt((x2-x1)**2 + (y2-y1)**2)
@@ -223,7 +238,66 @@ class Visualizer():
                 grid[i].append(node)
 
         return grid
+
+    # A* Algorithm
+    def run_algorithm(self, grid, start, end):
+        count = 0
+
+        processing_vertices = PriorityQueue()
+        processing_vertices.put((0, count, start))
+
+        processing = {start}
+
+        parent = {}
+
+        # Keep track of distances to each node
+        g_dist = {node: float('inf') for row in grid for node in row}
+        f_dist = {node: float('inf') for row in grid for node in row}
+
+        g_dist[start] = 0
+        f_dist[start] = self.heuristic_function(start.get_pos(), end.get_pos())
+
+        while not processing_vertices.empty():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+
+            current = processing_vertices.get()[2]
+            processing.remove(current)
+
+            if current == end:
+                self.draw_path(parent, end, start, end, grid)
+                return True
+
+            for neighbour in current.neighbours:
+                temp_g_value = g_dist[current] + 1
+
+                if temp_g_value + self.heuristic_function(current.get_pos(), end.get_pos()) < f_dist[neighbour]:
+                    parent[neighbour] = current
+                    g_dist[neighbour] = temp_g_value
+                    f_dist[neighbour] = temp_g_value + self.heuristic_function(neighbour.get_pos(), end.get_pos())
+
+                    if neighbour not in processing:
+                        count += 1
+                        processing_vertices.put((f_dist[neighbour], count, neighbour))
+                        processing.add(neighbour)
+                        neighbour.set_being_explored()
+            
+            self.draw(grid)
+
+            if current != start:
+                current.set_explored()
+        return False
+
+    def draw_path(self, parents, current, start, end, grid):
+        while current in parents and current != start:
+            current = parents[current]
+            current.set_path()
+            self.draw(grid)
+        start.set_start()
+        end.set_end()
+        self.draw(grid)
     
 
 if __name__ == "__main__":
-    vis = Visualizer(1300, 20)
+    vis = Visualizer(1500, 30, False)
