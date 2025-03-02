@@ -20,7 +20,7 @@ from main import Colors, Visualizer
     - `size`: size of the window (in px)
     - `rows`: Number of rows and columns in the grid
     - `Colors`: Colors Used in the Visualizer
-    - `Enable` Diagonal Paths: Can the path be diagonal
+    - `Enable Diagonal Paths`: Are diagonal paths allowed ? (boolean)
 
 
 
