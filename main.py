@@ -301,4 +301,5 @@ class Visualizer():
     
 
 if __name__ == "__main__":
-    vis = Visualizer(1500, 30, False)
+    col = Colors()
+    vis = Visualizer(1500, 30, col, False)
