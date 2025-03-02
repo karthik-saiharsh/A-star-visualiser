@@ -4,7 +4,10 @@ A python library to visualize A* Path finding Algorithm in action
 
 
 
-## Usage
+![Image](https://raw.githubusercontent.com/karthik-saiharsh/A-star-visualiser/refs/heads/main/demo.png)
+
+
+# Usage
 
 - Download the source code
 - Import the Colors and Visualizer classes
@@ -59,3 +62,20 @@ vis = Visualizer(1500, 30, col, True)
 ```
 
 
+## Custom Heuristic Functions
+- The default implementation uses euclidean distance.
+- Other Heuristic Functions can be set as follows
+
+```python
+from main import Colors, Visualizer
+
+# Custom Heuristic Function
+def h(position1, position2):
+    x1, y1 = position1
+    x2, y2 = position2
+    return abs((x2-x1) + (y2-y1))
+
+col = Colors()
+vis = Visualizer(1300, 20, col, False)
+vis.custom_heuristic = h # the new heuristic function is used
+```

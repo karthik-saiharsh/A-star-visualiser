@@ -124,7 +124,7 @@ class Visualizer():
         self.win = pygame.display.set_mode((size, size))
 
         # A custom heurisic function can be passed here
-        self.heuristic = None
+        self.custom_heuristic = None
 
         pygame.display.set_caption("PathFinding algorithm vizualiser")
 
@@ -191,8 +191,8 @@ class Visualizer():
     def heuristic_function(self, pos1, pos2):
         # Heuristic function for A*
         # Default heuristic is just the eucledian distance between 2 points
-        if self.heuristic != None:
-            return self.heuristic(pos1, pos2)
+        if self.custom_heuristic != None:
+            return self.custom_heuristic(pos1, pos2)
         x1, y1 = pos1
         x2, y2 = pos2
         return sqrt((x2-x1)**2 + (y2-y1)**2)
