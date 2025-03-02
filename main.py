@@ -18,12 +18,13 @@ class Colors():
 
 ####### NODE CLASS #######
 class Node():
-    def __init__(self, row, col, size, total_rows, enable_diagonal_paths=False):
+    def __init__(self, row, col, size, total_rows, Colors, enable_diagonal_paths=False):
+        self.colors = Colors
         self.row = row
         self.col = col
         self.x = col * size
         self.y = row * size
-        self.color = Colors().neutral
+        self.color = self.colors.neutral
         self.size = size
         self.total_rows = total_rows
         self.neighbours = []
@@ -36,41 +37,41 @@ class Node():
 
     #Methods to get state of node
     def is_explored(self):
-        return self.color == Colors().explored
+        return self.color == self.colors.explored
     
     def is_inactive(self):
-        return self.color == Colors().inactive
+        return self.color == self.colors.inactive
     
     def is_being_explored(self):
-        return self.color == Colors().exploring
+        return self.color == self.colors.exploring
     
     def is_start(self):
-        return self.color == Colors().start
+        return self.color == self.colors.start
     
     def is_end(self):
-        return self.color == Colors().end
+        return self.color == self.colors.end
     
     # Methods to set state of Node
     def set_explored(self):
-        self.color = Colors().explored
+        self.color = self.colors.explored
     
     def set_inactive(self):
-        self.color = Colors().inactive
+        self.color = self.colors.inactive
     
     def set_being_explored(self):
-        self.color = Colors().exploring
+        self.color = self.colors.exploring
     
     def set_start(self):
-        self.color = Colors().start
+        self.color = self.colors.start
     
     def set_end(self):
-        self.color = Colors().end
+        self.color = self.colors.end
 
     def set_path(self):
-        self.color = Colors().path
+        self.color = self.colors.path
 
     def reset(self):
-        self.color = Colors().neutral
+        self.color = self.colors.neutral
 
     
     # Additional methods
@@ -112,8 +113,8 @@ class Node():
 
 ####### Visualisor class #######
 class Visualizer():
-    def __init__(self, size, rows, enable_diagonal_paths=False):
-
+    def __init__(self, size, rows, Colors, enable_diagonal_paths=False):
+        self.colors = Colors
         # Verify that the dimentions of the window are in proper ration
         assert size % rows == 0, "The window size must be divisible by the number of rows"
 
@@ -234,7 +235,7 @@ class Visualizer():
         for i in range(self.rows):
             grid.append([])
             for j in range(self.rows):
-                node = Node(i, j, gap, self.rows, self.enable_diagonal_paths)
+                node = Node(i, j, gap, self.rows, self.colors, self.enable_diagonal_paths)
                 grid[i].append(node)
 
         return grid
