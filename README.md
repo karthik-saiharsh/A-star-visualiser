@@ -37,7 +37,8 @@ vis = Visualizer(1300, 20, col, False)
 - The first click (left mouse) adds the start node.
 - The second click (left mouse) adds the end/destination node.
 - Every click after the second creates a barrier/wall node. A barrier is a node which cannot become a path.
-- A right click removes resets a node
+- A right click resets a node
+- Pressing `space` starts the algorithm.
 
 
 ## Using Custom Colors
