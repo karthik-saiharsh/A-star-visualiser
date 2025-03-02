@@ -45,6 +45,7 @@ vis = Visualizer(1300, 20, col, False)
 
 
 ## Using Custom Colors
+- Colors are passed in as RGB Values in a tuple
 ```python
 col = Colors() # Create a colors Object
 
@@ -62,7 +63,7 @@ col.start = (239, 182, 200) # Start Node
 
 ```python
 vis = Visualizer(1500, 30, col, True)
-                            ^ Pass the custom Colors
+                            ^ Pass the custom Colors as argument
 ```
 
 
