@@ -8,7 +8,7 @@ A python library to visualize A* Path finding Algorithm in action
 
 # Dependencies
 - `pip install pygame`
-- `pip3 install pygame` (linux)
+- `sudo apt-get install python3-pygame` (linux)
 
 # Usage
 
